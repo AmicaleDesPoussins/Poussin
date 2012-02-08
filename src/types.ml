@@ -14,3 +14,13 @@ type formula =
   | Imp of formula * formula
   | Forall of var * formula
   | Exists of var * formula
+
+
+struct ordered_formula = 
+  type t = formula
+  let compare f1 f2 = ...(*TODO*)
+end
+
+module Formula_set = Set.Make ordered_formula
+
+type sequent = {context : Formula_set.t ; goal : formula}
