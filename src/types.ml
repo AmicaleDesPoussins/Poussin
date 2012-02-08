@@ -15,8 +15,8 @@ type formula =
   | Forall of var * formula
   | Exists of var * formula
 
-
-struct ordered_formula = 
+module ordered_formula =
+struct 
   type t = formula
   let compare f1 f2 = ...(*TODO*)
 end
@@ -24,3 +24,4 @@ end
 module Formula_set = Set.Make ordered_formula
 
 type sequent = {context : Formula_set.t ; goal : formula}
+
