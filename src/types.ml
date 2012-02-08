@@ -25,3 +25,11 @@ module Formula_set = Set.Make ordered_formula
 
 type sequent = {context : Formula_set.t ; goal : formula}
 
+struct set_of_rules
+set (set seq -> seq)
+end
+
+    functor proof_tree(Rules : set_of_rules)
+type t = 
+  | Nil
+  | Rule of oulalala!
