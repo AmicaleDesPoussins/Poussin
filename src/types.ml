@@ -15,17 +15,38 @@ type formula =
   | Forall of var * formula
   | Exists of var * formula
 
-module ordered_formula =
+module type ordered_formula =
+sig
+  type t
+  val compare : t -> t -> int
+end
+
+module ordered_minimal =
+struct
+  type t = formula
+      
+
+module Make_ordered_formula =
 struct 
   type t = formula
-  let rec compare f1 f2 = 
+  let rec compare f1 f2 =
     let compare_pred (s1,n1) (s2,n2) = match (n1-n2) with
       | 0 -> String.compare(s1, s2)
       | n where n>0 -> 1
       | _ -> -1
     and compare_var (x:var) (y:var) = String.compare x y
+    and trad (f:formula) = match f with
+      | And _ -> 1
+      | Or _ -> 2
+      | Imp _ -> 3
+      | Not _ -> 4
+      | Forall _ -> 5
+      | Exists _ -> 6
+      | Pred _ -> 7
     in
     match (f1, f2) with
+      | (f1, f2) when (trad f1)>(trad f2) -> 1
+      | (f1, f2) when (trad f1)<(trad f2) -> -1
       | (Pred p1, Pred p2) -> compare_pred p1 p2
       | (Not f3, Not f4) -> compare f3 f4
       | (And(f3,f4), And(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
@@ -35,17 +56,23 @@ struct
       | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
       | (Exists(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
       | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
+      | _ -> failwith "compare"
 end
 
 module Formula_set = Set.Make ordered_formula
 
 type sequent = {context : Formula_set.t ; goal : formula}
 
-struct set_of_rules
-set (set seq -> seq)
-end
+type rules = sequent list -> sequent (*A modifier, arité incluse ? Toujours le même type quelque soit la théorie ?*)
 
-    functor proof_tree(Rules : set_of_rules)
+module type set_of_rules
+sig
+  type set
+  set (set seq -> seq)
+end
+  
+module proof_tree(Rules : set_of_rules)
 type t = 
   | Nil
   | Rule of oulalala!
+  
