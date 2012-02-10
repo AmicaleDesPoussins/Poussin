@@ -23,11 +23,10 @@ struct
   type t = formula
 
   let rec compare f1 f2 =
-    let compare_pred (s1,n1) (s2,n2) = match (n1-n2) with
-      | 0 -> String.compare(s1, s2)
-      | n where n>0 -> 1
+    let compare_pred ((s1,n1):pred) ((s2,n2):pred) = match (n1-n2) with
+      | 0 -> String.compare s1 s2
+      | n when (n>0) -> 1
       | _ -> -1
-    and compare_var (x:var) (y:var) = String.compare x y
     and trad (f:formula) = match f with
       | And _ -> 1
       | Or _ -> 2
@@ -40,18 +39,16 @@ struct
     match (f1, f2) with
       | (f1, f2) when (trad f1)>(trad f2) -> 1
       | (f1, f2) when (trad f1)<(trad f2) -> -1
-      | (Pred p1, Pred p2) -> compare_pred p1 p2
+      | (Pred (p1, _), Pred (p2, _)) -> compare_pred p1 p2
       | (Not f3, Not f4) -> compare f3 f4
       | (And(f3,f4), And(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
       | (Or(f3,f4), Or(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
       | (Imp(f3,f4), Imp(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
       | (Forall(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
-      | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
+      | (Forall(Var x, _), Forall(Var y, _)) -> String.compare x y
       | (Exists(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
       | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
       | _ -> failwith "compare"
-
-
 end
 
 
@@ -77,7 +74,7 @@ module proof_tree(Rules : set_of_rules)
 type t = 
   | Nil
   | Rule of oulalala!
-<<<<<<< HEAD
+
   
 
 *)
