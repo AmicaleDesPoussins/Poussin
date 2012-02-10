@@ -15,17 +15,28 @@ type formula =
   | Forall of var * formula
   | Exists of var * formula
 
-module ordered_formula =
+module Ordered_formula =
 struct 
 
   type t = formula
 
-  let rec compare f1 f2 = 
-    let compare_pred (s1,n1) (s2,n2) = match (n1-n2) with
-      | 0 -> String.compare(s1, s2)
-      | n where n>0 -> 1
+  let compare (f1:formula) (f2:formula) = compare f1 f2
+  (*let rec compare f1 f2 = 
+    let compare_pred ((s1,n1):pred) ((s2,n2):pred) = match (n1-n2) with
+      | 0 -> String.compare s1 s2
+      | n when n > 0 -> 1
       | _ -> -1
     and compare_var (x:var) (y:var) = String.compare x y
+    and compare_func ((s1,n1):func) ((s2,n2):func) = match (n1-n2) with
+      | 0 -> String.compare s1 s2
+      | n when n > 0 -> 1
+      | _ -> -1
+    in
+    let rec compare_term t1 t2 = match (t1,t2) with
+      | (Var v1, Var v2) -> compare_var v1 v2
+      | (Func (f1,tl1), Func (f2,tl2)) when compare_func f1 f2 = 0 -> 
+      | (Var _, _) -> 1
+      |  (_, Var _) -> -1
     in
     let rec compare_rec f1 f2 = 
       match (f1, f2) with
@@ -51,13 +62,15 @@ struct
 	| (Exists _, _) -> 1 (*inutile en pratique*)
 	| (_, Exists _) -> -1 (*inutile en pratique*)
     in 
-    compare_rec f1 f2
+    compare_rec f1 f2*)
 end
 
-module Formula_set = Set.Make ordered_formula
+
+module Formula_set = Set.Make(Ordered_formula)
 
 type sequent = {context : Formula_set.t ; goal : formula}
 
+(*
 struct set_of_rules
 set (set seq -> seq)
 end
@@ -66,3 +79,4 @@ end
 type t = 
   | Nil
   | Rule of oulalala!
+*)
