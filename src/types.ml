@@ -17,7 +17,9 @@ type formula =
 
 module ordered_formula =
 struct 
+
   type t = formula
+
   let rec compare f1 f2 = 
     let compare_pred (s1,n1) (s2,n2) = match (n1-n2) with
       | 0 -> String.compare(s1, s2)
@@ -25,16 +27,31 @@ struct
       | _ -> -1
     and compare_var (x:var) (y:var) = String.compare x y
     in
-    match (f1, f2) with
-      | (Pred p1, Pred p2) -> compare_pred p1 p2
-      | (Not f3, Not f4) -> compare f3 f4
-      | (And(f3,f4), And(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
-      | (Or(f3,f4), Or(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
-      | (Imp(f3,f4), Imp(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
-      | (Forall(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
-      | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
-      | (Exists(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
-      | (Forall(Var x, f3), Forall(Var y, f4)) -> String.compare x y
+    let rec compare_rec f1 f2 = 
+      match (f1, f2) with
+	| (Pred p1, Pred p2) -> compare_pred p1 p2
+	| (Not f3, Not f4) -> compare f3 f4
+	| (And(f3,f4), And(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
+	| (Or(f3,f4), Or(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
+	| (Imp(f3,f4), Imp(f5, f6)) -> let r = compare f3 f5 in if r=0 then compare f4 f6 else r
+	| (Forall(x, f3), Forall(y, f4)) when x=y -> compare f3 f4
+	| (Forall(Var x, f3), Forall(Var y, f4)) -> compare_var x y
+	| (Exists(x, f3), Exists(y, f4)) when x=y -> compare f3 f4
+	| (Exists(Var x, f3), Exists(Var y, f4)) -> compare_var x y
+	| (Not _, _) -> 1
+	| (_, Not _) -> -1
+	| (And _, _) -> 1
+	| (_, And _) -> -1
+	| (Or _, _) -> 1
+	| (_, Or _) -> -1
+	| (Imp _, _) -> 1
+	| (_, Imp _) -> -1
+	| (Forall _, _) -> 1
+	| (_, Forall _) -> -1
+	| (Exists _, _) -> 1 (*inutile en pratique*)
+	| (_, Exists _) -> -1 (*inutile en pratique*)
+    in 
+    compare_rec f1 f2
 end
 
 module Formula_set = Set.Make ordered_formula
