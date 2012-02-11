@@ -1,6 +1,6 @@
-type var 
-type func 
-type pred 
+type var
+type func
+type pred
 type term = Var of var | Func of func * term list
 type formula =
     Pred of pred * term list
@@ -42,3 +42,4 @@ module Formula_set :
     val split : elt -> t -> t * bool * t
   end
 type sequent = { context : Formula_set.t; goal : formula; }
+type rules = sequent list -> sequent
