@@ -44,12 +44,10 @@ module Formula_set :
   end
 
 type sequent = { context : Formula_set.t; goal : formula; }
-module Ordered_sequent :
-  sig type t = sequent val compare : 'a -> 'a -> int end
 module Sequent_set :
   sig
-    type elt = Ordered_sequent.t
-    type t = Set.Make(Ordered_sequent).t
+    type elt = sequent
+    type t
     val empty : t
     val is_empty : t -> bool
     val mem : elt -> t -> bool
@@ -76,8 +74,22 @@ module Sequent_set :
     val split : elt -> t -> t * bool * t
   end
 
-module Rules :
+module type Rules =
 sig
   type rules
   val check : rules -> Sequent_set.t -> sequent -> bool
+end
+
+module FirstOrder : Rules
+
+module ProofTree : functor (R : Rules) ->
+sig
+  type t
+  val check : t -> bool
+end
+
+module FirstOrderProofTree :
+sig
+  type t
+  val check : t -> bool
 end

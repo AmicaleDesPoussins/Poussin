@@ -14,7 +14,6 @@ type formula =
   | Imp of formula * formula
   | Forall of var * formula
   | Exists of var * formula
-
 module Ordered_formula =
 struct 
   type t = formula
@@ -24,27 +23,36 @@ module Formula_set = Set.Make(Ordered_formula)
 
 
 type sequent = {context : Formula_set.t ; goal : formula}
-module Ordered_sequent =
-struct
-  type t = sequent
-  let compare = compare
-end
-module Sequent_set = Set.Make(Ordered_sequent)
+module Sequent_set =
+  Set.Make(struct type t = sequent let compare = compare end)
 
-module Rules =
-struct
-  type rules = e_and | i_and | e_or | i_or
-  let check r p c = true
+
+module type Rules =
+sig
+  type rules
+  val check : rules -> Sequent_set.t -> sequent -> bool
 end
 
-(*module proof_tree = functor (R : Rules)
+module FirstOrder : Rules  =
 struct
-  type t =
+  type rules = E_and | I_and | E_or | I_or  (* TODO: to complete.... *)
+  let check r p c = true (* TODO *)
+end
+
+
+module ProofTree (R : Rules) =
+struct
+  type t = (* TODO : wrong definition (not recursive) *)
     | Nil
-    | Leaf of Rules.rules * Sequent_set.t * sequent
-  val is_valid : t -> bool
+    | Leaf of R.rules * Sequent_set.t * sequent
+  let check = function (* TODO *)
+    | Nil -> true
+    | Leaf (r,p,c) -> R.check r p c
 end
-*)
+
+module FirstOrderProofTree = ProofTree (FirstOrder)
+
+
 
 
 (*type rules = Sequent_set.t -> sequent  A modifier, arité incluse ? Toujours le même type quelque soit la théorie ?*)
@@ -65,8 +73,4 @@ module proof_tree(Rules : set_of_rules)
 type t = 
   | Nil
   | Rule of oulalala!
-
-  
-
 *)
-
