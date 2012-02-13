@@ -14,6 +14,7 @@ type formula =
   | Imp of formula * formula
   | Forall of var * formula
   | Exists of var * formula
+
 module Ordered_formula =
 struct 
   type t = formula
@@ -26,6 +27,9 @@ type sequent = {context : Formula_set.t ; goal : formula}
 module Sequent_set =
   Set.Make(struct type t = sequent let compare = compare end)
 
+(**
+   *For a given logic, we give the set of deduction rules which defines it. It is done through a sum type "rules".
+**)
 
 module type Rules =
 sig
@@ -33,9 +37,10 @@ sig
   val check : rules -> Sequent_set.t -> sequent -> bool
 end
 
+
 module FirstOrder : Rules  =
 struct
-  type rules = E_and | I_and | E_or | I_or  (* TODO: to complete.... *)
+  type rules = Ax | E_and | I_and | E_or | I_or  (* TODO: to complete.... and discuss about the equality *)
   let check r p c = true (* TODO *)
 end
 
