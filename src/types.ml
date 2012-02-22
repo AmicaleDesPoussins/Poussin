@@ -6,14 +6,27 @@ type term =
   | Var of var
   | Func of func * (term list)
 
-type formula = 
-  | Pred of pred * (term list)
-  | Not of formula
-  | And of formula * formula
-  | Or of formula * formula
-  | Imp of formula * formula
-  | Forall of var * formula
-  | Exists of var * formula
+module type Language =
+sig
+  type connector
+  type quantifier
+  type var
+  type pred
+  type fonction
+  type formula
+end
+
+module First_Order_language : Language = 
+struct
+  type t =
+    | Pred of pred * (term list)
+    | Not of formula
+    | And of formula * formula
+    | Or of formula * formula
+    | Imp of formula * formula
+    | Forall of var * formula
+    | Exists of var * formula
+end
 
 module Ordered_formula =
 struct 
